@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flexbox vs Float</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+    }
+    .controls {
+      margin: 10px;
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      grid-gap: .5em;
+    }
+
+    label {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .example div, .example-div {
+      border: 2px solid black;
+      height: 50px;
+      width: 50px;
+    }
+    .example {
+      background-color: hsl(184, 24%, 76%);
+      border: 4px solid hsl(200, 50%, 30%);
+      min-height: 60vh;
+    }
+    .example * {
+      cursor: pointer;
+    }
+    .example *.right {
+      --content: 'right';
+    }
+    .example *.left {
+      --content: 'left';
+    }
+    .example *.none {
+      --content: 'none'
+    }
+    .example *::after {
+      content: var(--content, 'none');
+      background: hsla(0, 0%, 100%, .7);
+      margin: 4px;
+    }
+
+    .example span, .example-span {
+      border: 2px solid hsl(0, 50%, 40%);
+    }
+    .example div:first-of-type, .example-div {
+      background-color: hsl(0, 30%, 60%);
+    }
+    .example div:nth-of-type(2) {
+      background-color: hsl(90, 30%, 60%);
+    }
+    .example div:nth-of-type(3) {
+      background-color: hsl(40, 30%, 60%);
+    }
+    .example div:nth-of-type(4) {
+      background-color: hsl(270, 30%, 60%);
+    }
+  </style>
+</head>
+<body>  
+  <div class="example">
+    <div></div>
+    <div></div>
+    <span>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ac sapien in risus consectetur vehicula sed in tortor. Donec scelerisque, enim ut commodo congue, tortor augue dignissim ex, et laoreet magna justo id enim. Nulla et ultrices leo, id ornare arcu. Donec sed suscipit justo, sit amet vestibulum risus. Vestibulum dignissim purus et arcu condimentum luctus. Nunc posuere feugiat dolor ac aliquet. Mauris in finibus diam.
+
+        Integer non faucibus sapien, et malesuada diam. Ut ornare porta convallis. In a diam id elit lacinia blandit eget in risus. Donec in tellus urna. Nam vel tincidunt lorem. Ut scelerisque vulputate odio eleifend tempus. Integer efficitur congue diam, eu dictum mi aliquet eu.
+    </span>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="controls">
+    <label for="display">display:</label>    
+    <select id="display">
+      <option>block</option>
+      <option>flex</option>
+    </select>
+    <label for="flexDirection">flex-direction:</label>
+    <select id="flexDirection">
+      <option>row</option>
+      <option>column</option>
+      <option>row-reverse</option>
+      <option>column-reverse</option>
+    </select>
+    <label for="alignItems">align-items:</label>
+    <select id="alignItems">
+      <option>flex-start</option>
+      <option>flex-end</option>
+      <option>center</option>
+    </select>
+    <label for="justifyContent">justify-content:</label>
+    <select id="justifyContent">
+      <option>flex-start</option>
+      <option>flex-end</option>
+      <option>center</option>
+      <option>space-around</option>
+      <option>space-between</option>      
+    </select>
+  </div>
+  
+  <ul>
+    <li>
+      Click on the child elements inside the <span class="example">container</span> to 
+      change their <code>float</code> property
+    </li>
+    <li>
+      Notice that the <span class="example-div">divs</span> behave a bit differently to 
+      the <span class="example-span">span</span>
+    </li>
+    <li>
+      Change the <code>display</code> to <code>flex</code> and watch the magic! (Flexbox 
+      "overrides" float, so the float properties have no effect while the container has 
+      <code>display: flex</code>)
+    </li>
+    <li>
+      <code>justify-content</code> needs a bit of free space on the main axis to work.
+      (The main axis is the width when flex-direction is row, and the height when
+      flex-direction is column). To see it at work here, change the flex-direction to column.
+    </li>
+  </ul>
+  <script>
+    const container = document.querySelector('.example');
+    document.querySelectorAll('.controls select').forEach((control) => {
+      control.addEventListener('change', function() {
+        const property = this.id;
+        const index = this.options.selectedIndex;
+        const value = this.options[index].textContent;
+
+        container.style[property] = value;
+      })
+    });
+
+    const floats = ['none', 'left', 'right'];
+    Array.from(container.children).forEach((element) => {
+      element.floatIndex = 0;
+
+      element.addEventListener('click', (event) => {
+        const element = event.target;
+        element.classList.remove(floats[element.floatIndex]);
+
+        element.floatIndex = (++element.floatIndex) % 3;
+        const newFloat = floats[element.floatIndex];
+        element.style.float = newFloat;
+        element.classList.add(newFloat);
+      });
+    })
+  </script>
+</body>
+</html>

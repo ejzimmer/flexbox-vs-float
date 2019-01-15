@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flow demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="slides.css">
+</head>
+<body style="display: flex; height: 100vh;">
+  <div class="flow example" style="margin: auto; position: static">
+    <div tabindex="0" onclick="changePosition('relative', event)" onkeydown="movePositioned(event)">one</div>
+    <div tabindex="0" onclick="changePosition('fixed', event)" onkeydown="movePositioned(event)">two</div>
+    <div tabindex="0" onclick="changePosition('absolute', event)" onkeydown="movePositioned(event)">three</div>       
+  </div>  
+  <script>
+    function changePosition(position, event) {
+      const element = event.target;
+      element.style.position = position;
+      element.style.top = '0px';
+      element.style.left = '0px';
+      element.textContent = `position: ${position}`;
+    }
+
+    function movePositioned(event) {
+      event.stopPropagation();
+
+      const side = ['ArrowUp', 'ArrowDown'].includes(event.key) ? 'top' : 'left';
+      const direction = ['ArrowUp', 'ArrowLeft'].includes(event.key) ? -1 : 1;
+
+      const position = getComputedStyle(event.target)[side].replace('px', '');
+      event.target.style[side] = `${Number(position || 0) + (10 * direction)}px`;
+    }
+  </script>  
+</body>
+</html>

@@ -5,152 +5,255 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Flexbox vs Float</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin: 0;
-    }
-    .controls {
-      margin: 10px;
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      grid-gap: .5em;
-    }
 
-    label {
-      font-family: 'Courier New', Courier, monospace;
-    }
-    .example div, .example-div {
-      border: 2px solid black;
-      height: 50px;
-      width: 50px;
-    }
-    .example {
-      background-color: hsl(184, 24%, 76%);
-      border: 4px solid hsl(200, 50%, 30%);
-      min-height: 60vh;
-    }
-    .example * {
-      cursor: pointer;
-    }
-    .example *.right {
-      --content: 'right';
-    }
-    .example *.left {
-      --content: 'left';
-    }
-    .example *.none {
-      --content: 'none'
-    }
-    .example *::after {
-      content: var(--content, 'none');
-      background: hsla(0, 0%, 100%, .7);
-      margin: 4px;
-    }
+  <link rel="stylesheet" href="reveal/reveal.css">
+  <link rel="stylesheet" href="zenburn.css">
+  <link rel="stylesheet" href="slides.css">
 
-    .example span, .example-span {
-      border: 2px solid hsl(0, 50%, 40%);
-    }
-    .example div:first-of-type, .example-div {
-      background-color: hsl(0, 30%, 60%);
-    }
-    .example div:nth-of-type(2) {
-      background-color: hsl(90, 30%, 60%);
-    }
-    .example div:nth-of-type(3) {
-      background-color: hsl(40, 30%, 60%);
-    }
-    .example div:nth-of-type(4) {
-      background-color: hsl(270, 30%, 60%);
-    }
-  </style>
+  <script src="reveal/reveal.js"></script>
+  <script src="reveal/highlight.js"></script>
 </head>
-<body>  
-  <div class="example">
-    <div></div>
-    <div></div>
-    <span>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ac sapien in risus consectetur vehicula sed in tortor. Donec scelerisque, enim ut commodo congue, tortor augue dignissim ex, et laoreet magna justo id enim. Nulla et ultrices leo, id ornare arcu. Donec sed suscipit justo, sit amet vestibulum risus. Vestibulum dignissim purus et arcu condimentum luctus. Nunc posuere feugiat dolor ac aliquet. Mauris in finibus diam.
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section class="center">
+        <h1>flexbox vs float</h1>
+      </section>
 
-        Integer non faucibus sapien, et malesuada diam. Ut ornare porta convallis. In a diam id elit lacinia blandit eget in risus. Donec in tellus urna. Nam vel tincidunt lorem. Ut scelerisque vulputate odio eleifend tempus. Integer efficitur congue diam, eu dictum mi aliquet eu.
-    </span>
-    <div></div>
-    <div></div>
-  </div>
-  <div class="controls">
-    <label for="display">display:</label>    
-    <select id="display">
-      <option>block</option>
-      <option>flex</option>
-    </select>
-    <label for="flexDirection">flex-direction:</label>
-    <select id="flexDirection">
-      <option>row</option>
-      <option>column</option>
-      <option>row-reverse</option>
-      <option>column-reverse</option>
-    </select>
-    <label for="alignItems">align-items:</label>
-    <select id="alignItems">
-      <option>flex-start</option>
-      <option>flex-end</option>
-      <option>center</option>
-    </select>
-    <label for="justifyContent">justify-content:</label>
-    <select id="justifyContent">
-      <option>flex-start</option>
-      <option>flex-end</option>
-      <option>center</option>
-      <option>space-around</option>
-      <option>space-between</option>      
-    </select>
-  </div>
+      <section class="center">
+        <div style="border: 2px solid var(--white); width: 25vw; height: 25vh; padding: 5px;">
+          <div style="width: 100vw; font-size: 10vh">
+            CSS layout is hard
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="header">header</div>
+          <div class="menu">menu</div>
+          <div class="content" contenteditable="true">content</div>
+          <div class="footer">footer</div>
+        </div>
+      </section>
+
+      <section class="vertical">
+        <pre><code class="html">
+<table border="4px" rules="all" cellpadding="16px" width="400px">
+  <tbody>
+    <tr><td colspan="3">header</td></tr>
+    <tr><td>menu</td><td colspan="2">content</td></tr>
+    <tr><td colspan="3">footer</td></tr>
+  </tbody>
+</table>
+        </code></pre>
+
+        <table border="4px" rules="all" cellpadding="16px" width="400px" class="fragment">
+          <tr><td colspan="3">header</td></tr>
+          <tr><td>menu</td><td colspan="2" contenteditable="true">content</td></tr>
+          <tr><td colspan="3">footer</td></tr>
+        </table>
+      </section>
+
+      <section class="center">
+        <pre style="margin: auto"><code>
+.menu {
+  float: left;
+}
+        </code></pre>
+      </section>
+
+      <section class="center">
+        <h2>css display types</h2>
+      </section>
+
+      <section class="vertical">
+        <div>
+          <button onclick="addDisplayElement('none')" id="add_item_none">none</button>
+          <button onclick="addDisplayElement('block')" id="add_item_block">block</button>
+          <button onclick="addDisplayElement('inline')" id="add_item_span">inline</button>
+        </div>
+        <div class="display-types example" style="margin: 20px; padding: 10px;">
+        </div>
+        <script>
+          const displayTypesContainer = document.querySelector('.display-types.example');
+          function addDisplayElement(type) {
+            const element = document.createElement('div');
+            element.style.display = type;
+            element.textContent = type;
+            displayTypesContainer.appendChild(element);
+          }
+        </script>
+      </section>
+
+      <section class="vertical">
+        <div class="style-options">
+          <div>display: </div>
+          <div class="display-options">
+            <input type="radio" name="display" id="display_block" checked onchange="changeDisplayType('block')">
+            <label for="display_block">block</label>
+            <input type="radio" name="display" id="display_inline" onchange="changeDisplayType('inline')">
+            <label for="display_inline">inline</label>
+          </div>
+          <div class="dimensions">
+            <label for="width">width</label>
+            <input type="range" id="width" onchange="changeWidth(event)">
+            <label for="height">height</label>
+            <input type="range" name="" id="height" onchange="changeWidth(event)">
+          </div>
+        </div>
+        <div class="display example">
+          <div>one</div>
+        </div>
+        <script>
+          const displayExampleDiv = document.querySelector('.display.example div');
+          function changeDisplayType(type) {
+            displayExampleDiv.style.display = type;
+          }
+          function changeWidth(event) {
+            const size = event.target.value;
+            const property = event.target.id;
+            displayExampleDiv.style[property] = `${size}vw`;
+          }
+        </script>    
+      </section>
+
+      <section class="center">
+        <h2>css flow layout</h2>
+      </section>
+
+      <section>
+        <iframe src="flow-demo.html"></iframe>
+      </section>
+
+      <section class="center">
+        <h2>so what happens when you float an element?</h2>
+      </section>
   
-  <ul>
-    <li>
-      Click on the child elements inside the <span class="example">container</span> to 
-      change their <code>float</code> property
-    </li>
-    <li>
-      Notice that the <span class="example-div">divs</span> behave a bit differently to 
-      the <span class="example-span">span</span>
-    </li>
-    <li>
-      Change the <code>display</code> to <code>flex</code> and watch the magic! (Flexbox 
-      "overrides" float, so the float properties have no effect while the container has 
-      <code>display: flex</code>)
-    </li>
-    <li>
-      <code>justify-content</code> needs a bit of free space on the main axis to work.
-      (The main axis is the width when flex-direction is row, and the height when
-      flex-direction is column). To see it at work here, change the flex-direction to column.
-    </li>
-  </ul>
+      <section>
+        <div class="float example" style="width: 100vw; outline: 2px dashed var(--white)">
+          <div style="width: 6ch;" onclick="changeFloat(event)">one</div>
+          <div style="width: 6ch;" onclick="changeFloat(event)">two</div>
+        </div>
+        <script>
+          function changeFloat(event) {
+            const current = getComputedStyle(event.target).float;
+            const newFloat = current === 'none' ? 'left' : current === 'left' ? 'right' : 'none';
+            event.target.style.float = newFloat;
+            event.target.textContent = `float: ${newFloat}`;
+          }
+        </script>
+      </section>
+
+      <section>
+        <div>
+          <img src="x-wing.png" style="float: right; width: 33%;" />
+          <p>
+              It is a period of civil war.
+              Rebel spaceships, striking
+              from a hidden base, have won
+              their first victory against
+              the evil Galactic Empire.
+          </p><p>
+              During the battle, Rebel
+              spies managed to steal secret
+              plans to the Empire's
+              ultimate weapon, the DEATH
+              STAR, an armored space
+              station with enough power to
+              destroy an entire planet.
+              </p><p>
+              Pursued by the Empire's
+              sinister agents, Princess
+              Leia races home aboard her
+              starship, custodian of the
+              stolen plans that can save
+              her people and restore
+              freedom to the galaxy....
+          </p>
+        </div>
+        <div class="notes">
+          what float is intended for and the ONLY thing you should use it for
+          you can get it to do other stuff by hacks but you're asking for trouble -
+          especially, with generic components any size/content
+        </div>
+      </section>
+
+      <section class="center">
+        <h2>so what should I use instead?</h2>
+      </section>
+
+      <section class="center">
+        <h2>display: flex</h2>
+        <h2 class="fragment">display: grid</h2>
+        <div class="notes">
+          change the way a container lays out its children
+        </div>
+      </section>
+
+      <section class="vertical">
+        <button style="align-self: center; font-size: 48px" onclick="makeFlex()">flexify!</button>
+        <button style="align-self: center; font-size: 48px" onclick="squish()">squish together!</button>
+        <button style="align-self: center; font-size: 48px" onclick="stretch()">stretchify!</button>
+        
+        <div id="flexy" class="example">
+          <div>one</div>
+          <div>two</div>
+          <div>three</div>
+        </div>
+        <script>
+          const flexy = document.getElementById('flexy');
+          function makeFlex() {
+            flexy.style.display = 'flex';
+          }
+          function squish() {
+            Array.from(flexy.children).forEach(child => child.style.margin = 0);
+          }
+          function stretch() {
+            flexy.children[1].style.flexGrow = '1';
+          }
+        </script>
+      </section>
+
+      <section class="vertical header-footer">
+        <div style="background-color: blue; padding: 40px;">header</div>
+        <div style="flex-grow: 1; padding: 40px">main content</div>
+        <div style="background-color: rebeccapurple; padding: 40px;">footer</div>
+      </section>
+
+      <section>
+        <iframe src="responsive-demo.html" style="color: inherit"></iframe>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="header">header</div>
+          <div class="menu">menu</div>
+          <div class="content" contenteditable="true">content</div>
+          <div class="footer">footer</div>
+        </div>
+      </section>
+
+      <section>
+        <div>flexbox: layout in a single row/column</div>
+        <div>grid: complicated 2d layout</div>
+      </section>
+  
+  
+    </div>
+  </div>
+  <script src="reveal/head.min.js"></script>
   <script>
-    const container = document.querySelector('.example');
-    document.querySelectorAll('.controls select').forEach((control) => {
-      control.addEventListener('change', function() {
-        const property = this.id;
-        const index = this.options.selectedIndex;
-        const value = this.options[index].textContent;
-
-        container.style[property] = value;
-      })
+    Reveal.initialize({
+      controls: false,
+      progress: false,
+      history: true,
+      center: false,
+      display: 'flex',
+      dependencies: [
+        { src: 'reveal/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      ]
     });
-
-    const floats = ['none', 'left', 'right'];
-    Array.from(container.children).forEach((element) => {
-      element.floatIndex = 0;
-
-      element.addEventListener('click', (event) => {
-        const element = event.target;
-        element.classList.remove(floats[element.floatIndex]);
-
-        element.floatIndex = (++element.floatIndex) % 3;
-        const newFloat = floats[element.floatIndex];
-        element.style.float = newFloat;
-        element.classList.add(newFloat);
-      });
-    })
   </script>
 </body>
 </html>

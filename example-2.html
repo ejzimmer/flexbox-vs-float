@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Example 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      --border-color: hsl(30, 50%, 50%);
+      --vertical-margin: 2vh;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 2 * var(--vertical-margin));
+      margin: var(--vertical-margin) 8vmin;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      background-color: hsl(30, 40%, 90%);
+    }
+    header {
+      padding: 4vh 0;
+      border-bottom: 4px ridge var(--border-color);
+    }
+    article {
+      flex-grow: 1;
+      margin: calc(var(--vertical-margin) * 1.5) 0;
+    }
+    footer {
+      height: 5vh;
+      border-top: 2px ridge var(--border-color);
+      padding-top: var(--vertical-margin);
+    }
+    .dedication {
+      text-align: center;
+      margin: calc(var(--vertical-margin) * 3);
+    }
+    footer a {
+      color: hsl(30, 50%, 30%);
+    }
+
+    @media (max-height: 500px) {
+      body {
+        --vertical-margin: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Bienvenue à l'example</header>
+  <article>
+      <p class="dedication">À LÉON WERTH</p>
+
+      <p>Je demande pardon aux enfants d’avoir dédié ce livre à une grande personne. J’ai une excuse sérieuse : cette grande personne est le meilleur ami que j’ai au monde. J’ai une autre excuse : cette grande personne peut tout comprendre, même les livres pour enfants. J’ai une troisième excuse : cette grande personne habite la France où elle a faim et froid. Elle a bien besoin d’être consolée. Si toutes ces excuses ne suffisent pas, je veux bien dédier ce livre à l’enfant qu’a été autrefois cette grande personne. Toutes les grandes personnes ont d’abord été des enfants. (Mais peu d’entre elles s’en souviennent.) Je corrige donc ma dédicace :</p>
+      
+      <p class="dedication">À LÉON WERTH</p>
+      
+      <p class="dedication">QUAND IL ÉTAIT PETIT GARÇON</p>
+  </article>
+  <footer>Comme c'est intéressant <a href="https://www.ebooksgratuits.com/html/st_exupery_le_petit_prince.html">Dis m'en plus</a></footer>  
+</body>
+</html>
