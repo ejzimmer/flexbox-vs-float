@@ -6,20 +6,36 @@
   <title>Example 1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    body {
+      height: 100vh;
+      display: flex;
+      background-color: black;
+      background:#000 url(http://www.script-tutorials.com/demos/360/images/stars.png) repeat top center;
+      color: hsl(50, 60%, 50%);
+      font-size: 24px;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+    .heading, h1 {
+      text-align: center;
+      font-size: 24px;
+    }
     main {
-      width: 30vw;
-      max-width: 400px;
-      min-width: 200px;
+      margin: auto;
+      width: 420px;
     }
     img {
-      shape-outside: polygon(0 0, 0 200px, 200px 300px);
-      width: 160px;
-      float: right;
+      shape-outside: polygon(37% 1%, 47% 11%, 58% 10%, 60% 16%, 63% 18%, 68% 16%, 71% 20%, 72% 23%, 86% 29%, 88% 26%, 90% 25%, 95% 26%, 96% 33%, 99% 52%, 98% 56%, 96% 57%, 90% 55%, 90% 58%, 89% 61%, 88% 67%, 87% 97%, 84% 99%, 83% 98%, 80% 61%, 70% 51%, 66% 52%, 63% 54%, 59% 52%, 56% 48%, 27% 70%, 11% 78%, 7% 79%, 2% 74%, 1% 67%, 4% 60%, 5% 51%, 3% 47%, 1% 42%, 2% 37%, 4% 27%, 2% 17%, 2% 9%, 1% 2%);
+      shape-outside: polygon(1% 2%, 37% 1%, 92% 25%, 99% 40%, 99% 56%, 90% 56%, 87% 69%, 87% 98%, 81% 99%, 78% 60%, 64% 52%, 55% 52%, 29% 73%, 9% 80%, 3% 75%, 1% 70%);
+      shape-margin: 10px;
+      width: 220px;
+      float: left;
     }
   </style>
 </head>
 <body>
   <main>
+    <div class="heading">Episode IV</div>
+    <h1>A NEW HOPE</h1>  
     <img src="x-wing.png" alt="x-wing" />
     <p>It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire.</p>
 
