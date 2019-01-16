@@ -6,12 +6,18 @@
   <title>Flow demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="slides.css">
+  <style>
+    .example div {
+      width: 12ch;
+      height: 12ch;
+    }
+  </style>
 </head>
 <body style="display: flex; height: 100vh;">
   <div class="flow example" style="margin: auto; position: static">
     <div tabindex="0" onclick="changePosition('relative', event)" onkeydown="movePositioned(event)">one</div>
     <div tabindex="0" onclick="changePosition('fixed', event)" onkeydown="movePositioned(event)">two</div>
-    <div tabindex="0" onclick="changePosition('absolute', event)" onkeydown="movePositioned(event)">three</div>       
+    <div style="transition: transform 2s" tabindex="0" onclick="changeTransform(event)">three</div>       
   </div>  
   <script>
     function changePosition(position, event) {
@@ -31,6 +37,25 @@
       const position = getComputedStyle(event.target)[side].replace('px', '');
       event.target.style[side] = `${Number(position || 0) + (10 * direction)}px`;
     }
+
+    let transform = 'none';
+    function changeTransform(event) {
+      event.stopPropagation();
+
+      if (transform.startsWith('rotate')) {
+        event.target.style.transform = 'translate(100px, 0)';
+        transform = 'translate';
+      } else if (transform.startsWith('translate')) {
+        event.target.style.transform = 'scale(2)';
+        transform = 'scale';
+      } else {
+        event.target.style.transform = 'rotate(3.125turn)';
+        transform = 'rotate'
+      }
+
+      event.target.textContent = `transform: ${transform}`;
+     }
+
   </script>  
 </body>
 </html>

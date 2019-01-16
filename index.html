@@ -64,7 +64,15 @@
       </section>
 
       <section class="center">
-        <h2>css display types</h2>
+        <h2>css flow</h2>
+      </section>
+
+      <section class="center">
+        <pre><code class="css">
+          display: block;
+          display: inline;
+          display: none;
+        </code></pre>
       </section>
 
       <section class="vertical">
@@ -86,46 +94,10 @@
         </script>
       </section>
 
-      <section class="vertical">
-        <div class="style-options">
-          <div>display: </div>
-          <div class="display-options">
-            <input type="radio" name="display" id="display_block" checked onchange="changeDisplayType('block')">
-            <label for="display_block">block</label>
-            <input type="radio" name="display" id="display_inline" onchange="changeDisplayType('inline')">
-            <label for="display_inline">inline</label>
-          </div>
-          <div class="dimensions">
-            <label for="width">width</label>
-            <input type="range" id="width" onchange="changeWidth(event)">
-            <label for="height">height</label>
-            <input type="range" name="" id="height" onchange="changeWidth(event)">
-          </div>
-        </div>
-        <div class="display example">
-          <div>one</div>
-        </div>
-        <script>
-          const displayExampleDiv = document.querySelector('.display.example div');
-          function changeDisplayType(type) {
-            displayExampleDiv.style.display = type;
-          }
-          function changeWidth(event) {
-            const size = event.target.value;
-            const property = event.target.id;
-            displayExampleDiv.style[property] = `${size}vw`;
-          }
-        </script>    
-      </section>
-
-      <section class="center">
-        <h2>css flow layout</h2>
-      </section>
-
       <section>
         <iframe src="flow-demo.html"></iframe>
       </section>
-
+  
       <section class="center">
         <h2>so what happens when you float an element?</h2>
       </section>
@@ -133,7 +105,7 @@
       <section>
         <div class="float example" style="width: 100vw; outline: 2px dashed var(--white)">
           <div style="width: 6ch;" onclick="changeFloat(event)">one</div>
-          <div style="width: 6ch;" onclick="changeFloat(event)">two</div>
+          <div style="width: 6ch; background-color: blue" onclick="changeFloat(event)">two</div>
         </div>
         <script>
           function changeFloat(event) {
@@ -192,10 +164,12 @@
       </section>
 
       <section class="vertical">
-        <button style="align-self: center; font-size: 48px" onclick="makeFlex()">flexify!</button>
-        <button style="align-self: center; font-size: 48px" onclick="squish()">squish together!</button>
-        <button style="align-self: center; font-size: 48px" onclick="stretch()">stretchify!</button>
-        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+          <button style="align-self: center; font-size: 48px" onclick="makeFlex()">flexify!</button> <div>display: flex on the parent</div>
+          <button style="align-self: center; font-size: 48px" onclick="squish()">squish together!</button> <div>margin: 0 on the children</div>
+          <button style="align-self: center; font-size: 48px" onclick="stretch()">stretchify!</button> <div>flex-grow: 1 on one child</div>
+        </div>
+
         <div id="flexy" class="example">
           <div>one</div>
           <div>two</div>
@@ -222,7 +196,7 @@
       </section>
 
       <section>
-        <iframe src="responsive-demo.html" style="color: inherit"></iframe>
+        <a href="responsive-demo.html" style="color: inherit" target="blank">responsive-demo</a>
       </section>
 
       <section>
@@ -235,10 +209,43 @@
       </section>
 
       <section>
-        <div>flexbox: layout in a single row/column</div>
-        <div>grid: complicated 2d layout</div>
+        <ul style="width: 60%">
+          <li style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px" class="fragment">
+            <div>flexbox</div>
+            <div class="example small fragment" style="display: flex;">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="example small fragment" style="display: flex; flex-direction: column">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>  
+          </li>
+          <li style="display: flex;" class="fragment">
+            <div style="margin-right: 160px;">grid</div>
+            <div class="example small fragment grid" style="display: grid; grid-template-columns: repeat(4, 3ch); grid-auto-rows: 3ch">
+              <div style="grid-area: 1 / 1 / 3 / 3"></div>
+              <div style="grid-area: 3 / 1 / 5 / 3"></div>
+              <div style="grid-area: 1 / 3 / 3 / 4"></div>
+              <div style="grid-area: 3 / 3 / 6 / 5"></div>
+              <div></div>
+              <div></div>
+              <div style="grid-column: 1 / 3"></div>
+            </div>
+          </li>
+        </ul>
       </section>
-  
+      
+      <section class="center">
+        <h2>Challenges</h2>
+        <ul>
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-1.html">Challenge 1</a></li>
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-2.html">Challenge 2</a></li>
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-3.html">Challenge 3</a></li>
+        </ul>
+      </section>
   
     </div>
   </div>

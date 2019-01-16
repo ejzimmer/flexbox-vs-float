@@ -6,6 +6,17 @@
   <title>Responsive demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="slides.css" />
+  <style>
+    .example {
+      justify-content: space-around;
+    }
+    .example div {
+      --side: 10ch;
+      width: var(--side);
+      height: var(--side);
+      margin: 10px 0;
+    }
+  </style>
 </head>
 <body>
   <section class="example" style="display: flex; flex-wrap: wrap;">
