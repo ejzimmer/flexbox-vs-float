@@ -128,3 +128,6 @@ iframe {
 a {
   color: inherit;
 }
+.double-center {
+  align-items: center;
+}
