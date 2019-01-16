@@ -124,3 +124,7 @@ iframe {
   outline: 4px dashed var(--white);
   padding: 0;
 }
+
+a {
+  color: inherit;
+}
