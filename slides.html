@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flexbox vs Float</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="reveal/reveal.css">
+  <link rel="stylesheet" href="zenburn.css">
+  <link rel="stylesheet" href="slides.css">
+
+  <script src="reveal/reveal.js"></script>
+  <script src="reveal/highlight.js"></script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section class="center">
+        <h1>flexbox vs float</h1>
+      </section>
+
+      <section class="center">
+        <div style="border: 2px solid var(--white); width: 25vw; height: 25vh; padding: 5px;">
+          <div style="width: 100vw; font-size: 10vh">
+            CSS layout is hard
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="header">header</div>
+          <div class="menu">menu</div>
+          <div class="content" contenteditable="true">content</div>
+          <div class="footer">footer</div>
+        </div>
+      </section>
+
+      <section class="vertical">
+        <pre><code class="html">
+<table border="4px" rules="all" cellpadding="16px" width="400px">
+  <tbody>
+    <tr><td colspan="3">header</td></tr>
+    <tr><td>menu</td><td colspan="2">content</td></tr>
+    <tr><td colspan="3">footer</td></tr>
+  </tbody>
+</table>
+        </code></pre>
+
+        <table border="4px" rules="all" cellpadding="16px" width="400px" class="fragment">
+          <tr><td colspan="3">header</td></tr>
+          <tr><td>menu</td><td colspan="2" contenteditable="true">content</td></tr>
+          <tr><td colspan="3">footer</td></tr>
+        </table>
+      </section>
+
+      <section class="center">
+        <pre style="margin: auto"><code>
+.menu {
+  float: left;
+}
+        </code></pre>
+      </section>
+
+      <section class="center">
+        <h2>css flow</h2>
+      </section>
+
+      <section class="center">
+        <pre><code class="css">
+          display: block;
+          display: inline;
+          display: none;
+        </code></pre>
+      </section>
+
+      <section class="vertical">
+        <div>
+          <button onclick="addDisplayElement('none')" id="add_item_none">none</button>
+          <button onclick="addDisplayElement('block')" id="add_item_block">block</button>
+          <button onclick="addDisplayElement('inline')" id="add_item_span">inline</button>
+        </div>
+        <div class="display-types example" style="margin: 20px; padding: 10px;">
+        </div>
+        <script>
+          const displayTypesContainer = document.querySelector('.display-types.example');
+          function addDisplayElement(type) {
+            const element = document.createElement('div');
+            element.style.display = type;
+            element.textContent = type;
+            displayTypesContainer.appendChild(element);
+          }
+        </script>
+      </section>
+
+      <section>
+        <iframe src="flow-demo.html"></iframe>
+      </section>
+  
+      <section class="center">
+        <h2>so what happens when you float an element?</h2>
+      </section>
+  
+      <section>
+        <div class="float example" style="width: 100vw; outline: 2px dashed var(--white)">
+          <div style="width: 6ch;" onclick="changeFloat(event)">one</div>
+          <div style="width: 6ch; background-color: blue" onclick="changeFloat(event)">two</div>
+        </div>
+        <script>
+          function changeFloat(event) {
+            const current = getComputedStyle(event.target).float;
+            const newFloat = current === 'none' ? 'left' : current === 'left' ? 'right' : 'none';
+            event.target.style.float = newFloat;
+            event.target.textContent = `float: ${newFloat}`;
+          }
+        </script>
+      </section>
+
+      <section>
+        <div>
+          <img src="x-wing.png" style="float: right; width: 33%;" />
+          <p>
+              It is a period of civil war.
+              Rebel spaceships, striking
+              from a hidden base, have won
+              their first victory against
+              the evil Galactic Empire.
+          </p><p>
+              During the battle, Rebel
+              spies managed to steal secret
+              plans to the Empire's
+              ultimate weapon, the DEATH
+              STAR, an armored space
+              station with enough power to
+              destroy an entire planet.
+              </p><p>
+              Pursued by the Empire's
+              sinister agents, Princess
+              Leia races home aboard her
+              starship, custodian of the
+              stolen plans that can save
+              her people and restore
+              freedom to the galaxy....
+          </p>
+        </div>
+        <div class="notes">
+          what float is intended for and the ONLY thing you should use it for
+          you can get it to do other stuff by hacks but you're asking for trouble -
+          especially, with generic components any size/content
+        </div>
+      </section>
+
+      <section class="center">
+        <h2>so what should I use instead?</h2>
+      </section>
+
+      <section class="center">
+        <h2>display: flex</h2>
+        <h2 class="fragment">display: grid</h2>
+        <div class="notes">
+          change the way a container lays out its children
+        </div>
+      </section>
+
+      <section class="vertical">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+          <button style="align-self: center; font-size: 48px" onclick="makeFlex()">flexify!</button> <div>display: flex on the parent</div>
+          <button style="align-self: center; font-size: 48px" onclick="squish()">squish together!</button> <div>margin: 0 on the children</div>
+          <button style="align-self: center; font-size: 48px" onclick="stretch()">stretchify!</button> <div>flex-grow: 1 on one child</div>
+        </div>
+
+        <div id="flexy" class="example">
+          <div>one</div>
+          <div>two</div>
+          <div>three</div>
+        </div>
+        <script>
+          const flexy = document.getElementById('flexy');
+          function makeFlex() {
+            flexy.style.display = 'flex';
+          }
+          function squish() {
+            Array.from(flexy.children).forEach(child => child.style.margin = 0);
+          }
+          function stretch() {
+            flexy.children[1].style.flexGrow = '1';
+          }
+        </script>
+      </section>
+
+      <section class="vertical header-footer">
+        <div style="background-color: blue; padding: 40px;">header</div>
+        <div style="flex-grow: 1; padding: 40px">main content</div>
+        <div style="background-color: rebeccapurple; padding: 40px;">footer</div>
+      </section>
+
+      <section>
+        <a href="responsive-demo.html" style="color: inherit" target="blank">responsive-demo</a>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="header">header</div>
+          <div class="menu">menu</div>
+          <div class="content" contenteditable="true">content</div>
+          <div class="footer">footer</div>
+        </div>
+      </section>
+
+      <section>
+        <ul style="width: 60%">
+          <li style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px" class="fragment">
+            <div>flexbox</div>
+            <div class="example small fragment" style="display: flex;">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="example small fragment" style="display: flex; flex-direction: column">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>  
+          </li>
+          <li style="display: flex;" class="fragment">
+            <div style="margin-right: 160px;">grid</div>
+            <div class="example small fragment grid" style="display: grid; grid-template-columns: repeat(4, 3ch); grid-auto-rows: 3ch">
+              <div style="grid-area: 1 / 1 / 3 / 3"></div>
+              <div style="grid-area: 3 / 1 / 5 / 3"></div>
+              <div style="grid-area: 1 / 3 / 3 / 4"></div>
+              <div style="grid-area: 3 / 3 / 6 / 5"></div>
+              <div></div>
+              <div></div>
+              <div style="grid-column: 1 / 3"></div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="center double-center">
+        <img src="https://media.giphy.com/media/VS7sJyD5Pvn9u/giphy.gif" style="width: 100%" alt="indiana jones shooting a guy">
+      </section>
+      
+      <section class="vertical">
+        <h2 style="margin: 0; margin-top: 25vh; text-align: left">Challenges</h2>
+        <ul style="width: 30%">
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-1.html">Challenge 1</a></li>
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-2.html">Challenge 2</a></li>
+          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-3.html">Challenge 3</a></li>
+        </ul>
+      </section>
+  
+    </div>
+  </div>
+  <script src="reveal/head.min.js"></script>
+  <script>
+    Reveal.initialize({
+      controls: false,
+      progress: false,
+      history: true,
+      center: false,
+      display: 'flex',
+      dependencies: [
+        { src: 'reveal/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      ]
+    });
+  </script>
+</body>
+</html>
