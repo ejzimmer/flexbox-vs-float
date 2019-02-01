@@ -1,14 +1,19 @@
 body {
+  --text-colour: hsl(213, 60%, 25%);
   margin: 4vh 0;
   font-family: sans-serif;
   display: flex;
-  color: hsl(213, 60%, 25%);
+  color: var(--text-colour);
   --container-border: 2px solid currentColor;
   --element-border: 1px solid currentColor;
   --white: hsl(213, 50%, 85%);
   --box-shadow-colour: hsla(213, 60%, 25%, .4);
   --medium-gap: 30px;
   --large-gap: 60px;
+}
+
+*:focus {
+  outline: 1px dashed var(--text-colour);
 }
 
 body, article:before {
