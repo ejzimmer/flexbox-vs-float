@@ -7,425 +7,457 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="zenburn.css">
-  <link rel="stylesheet" href="slides.css">
+  <link rel="stylesheet" href="styles.css">
 
   <script src="reveal/highlight.js"></script>
 </head>
 <body>
-  <h1>Flexbox vs Float: the final showdown</h1>
+  <article>
+    <h1 class="main-title">Flexbox vs Float</h1>
 
-  <h2>CSS layout is hard</h2>
-  <p>
-    HTML evolved out of the desire to share and link scientific papers.
-    I'm not sure if you've read a scientific paper recently, but the 
-    formatting required to create one is pretty limited. Headings, lists,
-    paragraphs and tables just about covers it.
-  </p>
-
-  <p>
-    These days, obviously, we need a lot more control than that, and for 
-    a number of historical reasons, CSS has struggled a little to catch 
-    up with what we needed. Layout in the vertical direction (eg vertical
-    centering and equal height columns) has been particularly difficult.
-  </p>
-
-  <h2>The holy grail</h2>
-
-  <p>
-    One layout in particular - called the holy grail layout - is particularly
-    useful with webpages, and particularly difficult to achieve with CSS and 
-    HTML. The holy grail layout consists of two equal height columns - 
-    usually main content and some kind of aside like a navigation bar - 
-    and, optionally a header and/or footer.
-  </p>
-
-  <div class="container">
-    <div class="header">header</div>
-    <div class="menu">menu</div>
-    <div class="content" contenteditable="true">content</div>
-    <div class="footer">footer</div>
-  </div>
-
-  <p>
-    Before CSS, the only way to do this was with tables. Below is a 
-    pure HTML implementation of the holy grail layout. Check it out 
-    in dev tools and be grateful you aren't a web developer in the 90s.
-  </p>
-
-  <table border="4px" rules="all" cellpadding="16px" width="400px" class="fragment">
-    <tr><td colspan="3">header</td></tr>
-    <tr><td>menu</td><td colspan="2" contenteditable="true">content</td></tr>
-    <tr><td colspan="3">footer</td></tr>
-  </table>
-
-  <p>
-    With the introduction of float, we got a way of achieving this layout 
-    using proper, semantic HTML, which is great! Unfortunately, using 
-    float for this was still a bit of a hack. To understand why, let's
-    have a look at how CSS manages page layout.
-  </p>
-
-  <h2>CSS flow</h2>
-
-  <p>
-    In its most basic mode of operation, the HTML engine lays out elements
-    on the page, one after the other, depending on their <code>display</code>
-    property. There are three basic display types.
-  </p>
-
-  <div>
-    <button onclick="addDisplayElement('none')" id="add_item_none">none</button>
-    <button onclick="addDisplayElement('block')" id="add_item_block">block</button>
-    <button onclick="addDisplayElement('inline')" id="add_item_span">inline</button>
-  </div>
-  <div class="display-types example" style="margin: 20px; padding: 10px;">
-  </div>
-  <script>
-    const displayTypesContainer = document.querySelector('.display-types.example');
-    function addDisplayElement(type) {
-      const element = document.createElement('div');
-      element.style.display = type;
-      element.textContent = type;
-      displayTypesContainer.appendChild(element);
-    }
-  </script>
-
-  <dl>
-    <dt>None</dt>
-    <dd>
-      Don't add the element to the render tree at all. The element doesn't 
-      appear on the page, doesn't affect the layout in any way, and is 
-      invisible to screen readers. (This differs from 
-      <code>visibility: hidden</code>, which stops the element from being
-      seen, but still causes it to take up space in the layout)
-    </dd>
-    <dt>Block</dt>
-    <dd>
-      Add the element on a new line. Add any subsequent elements on the next line.
-      Additionally, you can set the width and height of a block element explicitly in CSS.
-    </dd>
-    <dt>Inline</dt>
-    <dd>
-      Add the element next to the previous element (unless the previous element
-      was a block element, in which case put this element on a new line).
-      The width and height of an inline element depends entirely on its contents and 
-      can't be set in CSS.
-    </dd>
-  </dl>
-
-  <p>
-    There are a few other display types that aren't super relevant to our
-    discussion right now:
-  </p>
-  <ul>
-    <li>inline-block - like an inline element, but you can set the width and height</li>
-    <li>table - display like a table cell</li>
-    <li>flex & grid (and inline-flex and inline-grid) - act as a flex/grid container</li>
-  </ul>
-
-  <p>
-    There are other things that can affect how an element is layed out on a page.
-    For example, <code>position</code> and <code>transform</code> both affect layout.
-  </p>
-
-  <p>
-    <code>position: relative</code> allows you to move an element relative to
-    it's natural flow position, but keep its space reserved in the flow.
-  </p>
-
-  <p>
-    <code>position: absolute</code> and <code>position: fixed</code> remove 
-    the element from the flow entirely. Instead its position on screen is 
-    determined by its left/right/top/bottom properties.
-  </p>
-
-  <p>
-    <code>transform</code> grows/shrinks/skews/moves the element while still
-    reserving its place in the flow, like <code>position: relative</code>
-  </p>
-
-  <div class="flow example" style="margin: auto; position: static">
-    <div tabindex="0" onclick="changePosition('relative', event)" onkeydown="movePositioned(event)">one</div>
-    <div tabindex="0" onclick="changePosition('fixed', event)" onkeydown="movePositioned(event)">two</div>
-    <div style="transition: transform 2s" tabindex="0" onclick="changeTransform(event)">three</div>       
-  </div>  
-  <script>
-    function changePosition(position, event) {
-      const element = event.target;
-      element.style.position = position;
-      element.style.top = '0px';
-      element.style.left = '0px';
-      element.textContent = `position: ${position}`;
-    }
-
-    function movePositioned(event) {
-      event.stopPropagation();
-
-      const side = ['ArrowUp', 'ArrowDown'].includes(event.key) ? 'top' : 'left';
-      const direction = ['ArrowUp', 'ArrowLeft'].includes(event.key) ? -1 : 1;
-
-      const position = getComputedStyle(event.target)[side].replace('px', '');
-      event.target.style[side] = `${Number(position || 0) + (10 * direction)}px`;
-    }
-
-    let transform = 'none';
-    function changeTransform(event) {
-      event.stopPropagation();
-
-      if (transform.startsWith('rotate')) {
-        event.target.style.transform = 'translate(100px, 0)';
-        transform = 'translate';
-      } else if (transform.startsWith('translate')) {
-        event.target.style.transform = 'scale(2)';
-        transform = 'scale';
-      } else {
-        event.target.style.transform = 'rotate(3.125turn)';
-        transform = 'rotate'
-      }
-
-      event.target.textContent = `transform: ${transform}`;
-      }
-
-  </script>  
-
-  <h2>So what happens when you float an element?</h2>
-  
-  <div class="float example" style="width: 100vw; outline: 2px dashed var(--white)">
-    <div style="width: 6ch;" onclick="changeFloat(event)">one</div>
-    <div style="width: 6ch; background-color: blue" onclick="changeFloat(event)">two</div>
-  </div>
-  <script>
-    function changeFloat(event) {
-      const current = getComputedStyle(event.target).float;
-      const newFloat = current === 'none' ? 'left' : current === 'left' ? 'right' : 'none';
-      event.target.style.float = newFloat;
-      event.target.textContent = `float: ${newFloat}`;
-    }
-  </script>
-
-  <p>
-    As you can see, the element kind of gets taken out of the flow, but 
-    kind of still stays in it. It doesn't affect the flow of block 
-    elements, but it does affect the flow of other floated elements and 
-    the content within elements. This is quite handy in some situations.
-  </p>
-
-  <div>
-    <img src="x-wing.png" style="float: right; width: 33%;" />
+    <h2>CSS layout is hard</h2>
     <p>
-        It is a period of civil war.
-        Rebel spaceships, striking
-        from a hidden base, have won
-        their first victory against
-        the evil Galactic Empire.
-    </p><p>
-        During the battle, Rebel
-        spies managed to steal secret
-        plans to the Empire's
-        ultimate weapon, the DEATH
-        STAR, an armored space
-        station with enough power to
-        destroy an entire planet.
-        </p><p>
-        Pursued by the Empire's
-        sinister agents, Princess
-        Leia races home aboard her
-        starship, custodian of the
-        stolen plans that can save
-        her people and restore
-        freedom to the galaxy....
+      HTML evolved out of the desire to share and link scientific papers.
+      I'm not sure if you've read a scientific paper recently, but the 
+      formatting required to create one is pretty limited. Headings, lists,
+      paragraphs and tables just about covers it.
     </p>
-  </div>
 
-  <p>
-    Pretty much THE thing that float is intended for is having 
-    text flow around images, or other content. For anything else,
-    it's basically a hack.
-  </p>
+    <p>
+      These days, obviously, we need a lot more control than that, and for 
+      a number of historical reasons, CSS has struggled a little to catch 
+      up with what we needed. Layout in the vertical direction (eg vertical
+      centering and equal height columns) has been particularly difficult.
+    </p>
 
-  <h2>So what should I use instead?</h2>
+    <h2>The holy grail</h2>
 
-  <p>
-    Modern CSS gives you a couple of options for controlling 
-    layouts
-  </p>
+    <p>
+      One layout in particular - called the holy grail layout - is particularly
+      useful with webpages, and particularly difficult to achieve with CSS and 
+      HTML. The holy grail layout consists of two equal height columns - 
+      usually main content and some kind of aside like a navigation bar - 
+      and, optionally a header and/or footer.
+    </p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Property</th>
-        <th>Use</th>
-        <th>Availability</th>
-      </tr>
-    </thead>
-    <tr>
-      <td>
-        <code>display: flex</code>
-      </td>
-      <td>
-        For laying out content in a single line (row or column)
-      </td>
-      <td>
-        All modern browsers & IE11
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>display: grid</code>
-      </td>
-      <td>
-        For two-dimensional layouts - things that look a bit like 
-        tables, but aren't tables semantically
-      </td>
-      <td>
-        All modern browsers & partial implementation in IE11
-      </td>
-    </tr>
-    <tr>
-      <td><code>column-count</code></td>
-      <td>
-        For newspaper-style columns
-      </td>
-      <td>
-        Everything back to IE10
-      </td>
-    </tr>
-    <tr>
-      <td>HTML table</td>
-      <td>For things that are actually tables, like this table right here</td>
-      <td>Every browser ever</td>
-    </tr>
-  </table>
-
-  <p>
-    Flexbox and grid work differently to float in that they don't affect 
-    the layout of the property that has <code>display: flex/grid</code>.
-    Instead, they affect the layout of the element's children. This is handy
-    as you can set up a flexbox or grid and the layout will just work, without 
-    having to frig around with every single element involved.
-  </p>
-
-  <p>For instance</p>
-
-  <div class="example" style="display: flex">
-    <div>one</div>
-    <div style="flex-grow: 1">two</div>
-    <div>three</div>
-  </div>
-
-  <p>
-    can be achieved with
-  </p>
-
-  <pre><code>
-    .container {
-      display: flex;
-    }
-    .container div:nth-child(2) {
-      flex-grow: 1;
-    }
-  </code></pre>
-
-  <p>
-    We could then add any number of additional boxes, and they would
-    all just stick together, with the second box stretching to take 
-    up any additional space. Super easy.
-  </p>
-
-  <p>
-    <code>display: flex</code> is handy for doing layouts with the kind 
-    of footer you see on most webpages. You know, the layout where the body 
-    stretches so the footer is at the bottom of the page, even if there 
-    isn't much content, but gets pushed past the fold if there is more content?
-  </p>
-
-  <a href="responsive-demo.html" style="color: inherit" target="blank">Like in this demo</a>
-
-  <pre><code></code></pre>
-
-
-
-
-  <div class="reveal">
-    <div class="slides">
-    
-
-      <section class="vertical header-footer">
-        <div style="background-color: blue; padding: 40px;">header</div>
-        <div style="flex-grow: 1; padding: 40px">main content</div>
-        <div style="background-color: rebeccapurple; padding: 40px;">footer</div>
-      </section>
-
-      <section>
-        <a href="responsive-demo.html" style="color: inherit" target="blank">responsive-demo</a>
-      </section>
-
-      <section>
-        <div class="container">
-          <div class="header">header</div>
-          <div class="menu">menu</div>
-          <div class="content" contenteditable="true">content</div>
-          <div class="footer">footer</div>
-        </div>
-      </section>
-
-      <section>
-        <ul style="width: 60%">
-          <li style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px" class="fragment">
-            <div>flexbox</div>
-            <div class="example small fragment" style="display: flex;">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            <div class="example small fragment" style="display: flex; flex-direction: column">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>  
-          </li>
-          <li style="display: flex;" class="fragment">
-            <div style="margin-right: 160px;">grid</div>
-            <div class="example small fragment grid" style="display: grid; grid-template-columns: repeat(4, 3ch); grid-auto-rows: 3ch">
-              <div style="grid-area: 1 / 1 / 3 / 3"></div>
-              <div style="grid-area: 3 / 1 / 5 / 3"></div>
-              <div style="grid-area: 1 / 3 / 3 / 4"></div>
-              <div style="grid-area: 3 / 3 / 6 / 5"></div>
-              <div></div>
-              <div></div>
-              <div style="grid-column: 1 / 3"></div>
-            </div>
-          </li>
-        </ul>
-      </section>
-
-      <section class="center double-center">
-        <img src="https://media.giphy.com/media/VS7sJyD5Pvn9u/giphy.gif" style="width: 100%" alt="indiana jones shooting a guy">
-      </section>
-      
-      <section class="vertical">
-        <h2 style="margin: 0; margin-top: 25vh; text-align: left">Challenges</h2>
-        <ul style="width: 30%">
-          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-1.html">Challenge 1</a></li>
-          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-2.html">Challenge 2</a></li>
-          <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-3.html">Challenge 3</a></li>
-        </ul>
-      </section>
-  
+    <div class="holy-grail">
+      <div class="header">header</div>
+      <div class="menu">menu</div>
+      <div class="content" contenteditable="true">
+        Add/remove text here to see how menu and main 
+        content columns stay the same height, regardless.
+        (Yes, you can type in this box)
+      </div>
+      <div class="footer">footer</div>
     </div>
-  </div>
-  <script src="reveal/head.min.js"></script>
-  <script>
-    Reveal.initialize({
-      controls: false,
-      progress: false,
-      history: true,
-      center: false,
-      display: 'flex',
-      dependencies: [
-        { src: 'reveal/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-      ]
-    });
-  </script>
+
+    <p>
+      Before CSS, the only way to do this was with tables. Below is a 
+      pure HTML implementation of the holy grail layout. Check it out 
+      in dev tools and be grateful you aren't a web developer in the 90s.
+    </p>
+
+    <table border="2px" rules="all" cellpadding="5px" width="400px">
+      <tr><td colspan="4" align="center" padding="10px">header</td></tr>
+      <tr><td>menu</td><td colspan="3" contenteditable="true">
+        You can type in here too. It acts a little differently to the layout
+        above, but you could make them more similar with a bit of CSS.
+      </td></tr>
+      <tr><td colspan="4" align="center">footer</td></tr>
+    </table>
+
+    <p>
+      With the introduction of float, we got a way of achieving this layout 
+      using proper, semantic HTML, which is great! Unfortunately, using 
+      float for this was still a bit of a hack. To understand why, let's
+      have a look at how CSS manages page layout.
+    </p>
+
+    <h2>CSS flow</h2>
+
+    <p>
+      In its most basic mode of operation, the HTML engine lays out elements
+      on the page, one after the other, depending on their <code>display</code>
+      property. There are three basic display types.
+    </p>
+
+    <dl>
+      <dt><code>none</code></dt>
+      <dd>
+        Don't add the element to the render tree at all. The element doesn't 
+        appear on the page, doesn't affect the layout in any way, and is 
+        invisible to screen readers.
+      </dd>
+      <dt><code>block</code></dt>
+      <dd>
+        Add the element on a new line. Add any subsequent elements on the next line.
+        The width and height of a block element can be controlled by CSS.
+      </dd>
+      <dt><code>inline</code></dt>
+      <dd>
+        Add the element next to the previous element (unless the previous element
+        was a block element, in which case put this element on a new line).
+        The width and height of an inline element depends entirely on its contents and 
+        can't be set in CSS.
+      </dd>
+    </dl>
+
+    <fieldset id="display-types-example">
+      <legend>click button, receive box</legend>
+      <button>none</button>
+      <button>block</button>
+      <button>inline</button>
+
+      <div id="display-types-example-container" class="example"></div>
+    </fieldset>
+    <script>
+      document.querySelectorAll('#display-types-example button').forEach((button) => {
+        button.addEventListener('click', addDisplayElement);
+      })
+      const displayTypesContainer = document.getElementById('display-types-example-container');
+      function addDisplayElement(event) {
+        const element = document.createElement('div');
+        const type = event.target.textContent;
+        element.style.display = type;
+        element.textContent = type;
+        displayTypesContainer.appendChild(element);
+      }
+    </script>
+
+    <p>
+      There are a few other display types that aren't super relevant to our
+      discussion right now:
+    </p>
+    <ul style="margin-bottom: var(--medium-gap)">
+      <li><code>inline-block</code>: like an inline element, but you can set the width and height</li>
+      <li><code>table</code>: display like a table cell</li>
+      <li><code>flex</code> & <code>grid</code> (and <code>inline-flex</code> and <code>inline-grid</code>): act as a flex/grid container</li>
+    </ul>
+
+    <p>
+      There are also other things that can affect how an element is layed out on a page.
+      For example, <code>position</code> and <code>transform</code> both affect layout.
+    </p>
+
+    <p>
+      <code>position: relative</code> allows you to move an element relative to
+      it's natural flow position, but keep its space reserved in the flow.
+    </p>
+
+    <p>
+      <code>position: absolute</code> and <code>position: fixed</code> remove 
+      the element from the flow entirely. Instead its position on screen is 
+      determined by its left/right/top/bottom properties.
+    </p>
+
+    <p>
+      <code>transform</code> grows/shrinks/skews/moves the element while still
+      reserving its place in the flow, like <code>position: relative</code>
+    </p>
+
+    <fieldset style="margin-bottom: var(--large-gap)">
+      <legend>click to transform</legend>
+      <p>
+        You can change the position of the first two boxes by clicking
+        on them then using the arrow keys, to see how the flow is affected.
+        Click the last box multiple times to see different transforms.
+      </p>
+
+      <div class="example change-flow" style="position: relative">
+        <div tabindex="0" onclick="changePosition('relative', event)" onkeydown="movePositioned(event)">one</div>
+        <div tabindex="0" onclick="changePosition('fixed', event)" onkeydown="movePositioned(event)">two</div>
+        <div style="transition: transform 2s" tabindex="0" onclick="changeTransform(event)">three</div>       
+      </div>
+    </fieldset>
+    <script>
+      function changePosition(position, event) {
+        const element = event.target;
+        element.style.position = position;
+        element.style.top = '0px';
+        element.style.left = '0px';
+        element.textContent = `position: ${position}`;
+      }
+
+      function movePositioned(event) {
+        event.stopPropagation();
+
+        const side = ['ArrowUp', 'ArrowDown'].includes(event.key) ? 'top' : 'left';
+        const direction = ['ArrowUp', 'ArrowLeft'].includes(event.key) ? -1 : 1;
+
+        const position = getComputedStyle(event.target)[side].replace('px', '');
+        event.target.style[side] = `${Number(position || 0) + (10 * direction)}px`;
+      }
+
+      let transform = 'none';
+      function changeTransform(event) {
+        event.stopPropagation();
+
+        if (transform.startsWith('rotate')) {
+          event.target.style.transform = 'translate(100px, 0)';
+          transform = 'translate';
+        } else if (transform.startsWith('translate')) {
+          event.target.style.transform = 'scale(2)';
+          transform = 'scale';
+        } else {
+          event.target.style.transform = 'rotate(3.125turn)';
+          transform = 'rotate'
+        }
+
+        event.target.textContent = `transform: ${transform}`;
+        }
+
+    </script>  
+
+    <h2>So what happens when you float an element?</h2>
+
+    <fieldset id="float-example">
+      <legend>click to float</legend>
+      <p>Click multiple times to float in different directions</p>
+      <div class="example float">
+        <div onclick="changeFloat(event)">one</div>
+        <div onclick="changeFloat(event)">two</div>
+      </div>
+    </fieldset>
+    <script>
+      function changeFloat(event) {
+        const current = getComputedStyle(event.target).float;
+        const newFloat = current === 'none' ? 'left' : current === 'left' ? 'right' : 'none';
+        event.target.style.float = newFloat;
+        event.target.textContent = `float: ${newFloat}`;
+      }
+      document.querySelectorAll('#float-example button').forEach((button) => {
+        button.addEventListener('click', changeFloat);
+      });
+    </script>
+
+    <p style="margin-bottom: var(--medium-gap)">
+      Things get a bit weird if you float the first box left, and don't
+      float the second box. The floated box kind of gets taken out of the 
+      flow, but kind of still stays in it. It doesn't affect the flow of block 
+      elements, but it does affect the flow of other floated elements and 
+      the content within elements. This is quite handy in some situations.
+    </p>
+
+    <fieldset class="episode-4-text">
+      <legend>Episode IV: A New Hope</legend>
+      <img src="x-wing.png" style="float: right; width: 33%;" />
+      <p>
+        It is a period of civil war. Rebel spaceships, striking
+        from a hidden base, have wontheir first victory against
+        the evil Galactic Empire.
+      </p>
+      <p>
+        During the battle, Rebel spies managed to steal secret
+        plans to the Empire's ultimate weapon, the DEATH
+        STAR, an armored space station with enough power to
+        destroy an entire planet.
+      </p>
+      <p>
+        Pursued by the Empire's sinister agents, Princess
+        Leia races home aboard her starship, custodian of the
+        stolen plans that can save her people and restore
+        freedom to the galaxy....
+      </p>
+    </fieldset>
+    <p>
+      Pretty much THE thing that float is intended for is having 
+      text flow around images, or other content. For anything else,
+      it's basically a hack.
+    </p>
+
+    <h2>So what should I use instead?</h2>
+
+    <p>
+      Modern CSS gives you a couple of options for controlling 
+      layouts
+    </p>
+
+    <table class="css-table" style="margin-bottom: var(--medium-gap)">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Use</th>
+          <th>Availability</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>
+          <code>display: flex</code>
+        </td>
+        <td>
+          Laying out content in a single line (row or column)
+        </td>
+        <td>
+          All modern browsers & IE11
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>display: grid</code>
+        </td>
+        <td>
+          Two-dimensional layouts - things that look a bit like 
+          tables, but aren't tables semantically
+        </td>
+        <td>
+          All modern browsers & partial implementation in IE11
+        </td>
+      </tr>
+      <tr>
+        <td><code>column-count</code></td>
+        <td>
+          Newspaper-style columns
+        </td>
+        <td>
+          Everything back to IE10
+        </td>
+      </tr>
+      <tr>
+        <td>HTML table</td>
+        <td>Things that are actually tables, like this table right here</td>
+        <td>Every browser ever</td>
+      </tr>
+    </table>
+
+    <p>
+      Flexbox and grid work differently to float in that they don't affect 
+      the layout of the property that has <code>display: flex/grid</code>.
+      Instead, they affect the layout of the element's children. This is handy
+      as you can set up a flexbox or grid and the layout will just work, without 
+      having to frig around with every single element involved.
+    </p>
+
+    <p>For instance, a layout like this</p>
+
+    <div class="example flex-grow">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <p>
+      can be achieved with
+    </p>
+
+    <pre><code>
+      .container {
+        display: flex;
+      }
+      .container div:nth-child(2) {
+        flex-grow: 1;
+      }
+    </code></pre>
+
+    <p>
+      The second box (the yellow one) will grow or shrink to take up
+      all remaining space, no matter how the window is resized. And, 
+      we could add any number of additional boxes, and get the same 
+      effect, without needing to touch our CSS.
+    </p>
+
+    <button onclick="addFlexGrowBox()">Add another box</button>
+    <script>
+      function addFlexGrowBox() {
+        const box = document.createElement('div');
+        document.querySelector('.example.flex-grow').appendChild(box);
+      }
+    </script>
+
+    <h2 style="margin-top: var(--large-gap)">Flexbox</h2>
+
+    <p>
+      <code>display: flex</code> is handy for doing layouts with the kind 
+      of footer you see on most webpages. You know, the layout where the body 
+      stretches so the footer is at the bottom of the page, even if there 
+      isn't much content, but gets pushed past the fold if there is more content?
+    </p>
+
+    <p>
+      <a href="example-2.html" style="color: inherit" target="blank">Like in this demo</a>
+      (Try resizing the window to see what I mean)
+    </p>
+
+    <p>You can achieve this layout with a bit of CSS like so</p>
+
+    <pre><code>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      main {
+        flex-grow: 1;
+      }
+    </code></pre>
+
+    <p>
+      It's also good for <a href="responsive-demo.html" style="color: inherit" target="blank">responsive 
+      layouts</a> that you want to wrap depending on screen size. (Again, resize the 
+      window to see what I mean).
+    </p>
+
+    <h2>Grid</h2>
+
+    <p>Grid is perfect for that holy grail layout</p>
+
+    <section>
+      <div class="holy-grail">
+        <div class="header">header</div>
+        <div class="menu">menu</div>
+        <div class="content" contenteditable="true">content</div>
+        <div class="footer">footer</div>
+      </div>
+    </section>
+
+    <p>which is styled using</p>
+
+    <pre><code>.container {
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: repeat(4, 1fr);
+}
+.header, .footer {
+  grid-column: 1 / -1;
+}
+.content {
+  grid-column: 2 / -1;
+}</code></pre>
+
+    <p>
+      (Ok, there's actually more styling on it than that, but
+      that's all you need for the grid bit)
+    </p>
+
+    <p>Or you can do more complicated layouts like this</p>
+
+    <div class="example complicated-grid">
+      <div style="grid-area: 1 / 1 / 3 / 3"></div>
+      <div style="grid-area: 3 / 1 / 5 / 3"></div>
+      <div style="grid-area: 1 / 3 / 3 / 4"></div>
+      <div style="grid-area: 3 / 3 / 6 / 5"></div>
+      <div></div>
+      <div></div>
+      <div style="grid-column: 1 / 3"></div>
+    </div>
+
+    <p>(The styling on this one is a little complicated. Probably best just to look in dev tools, if you're interested)</p>
+
+    <h2>Conclusion</h2>
+
+    <img src="https://media.giphy.com/media/VS7sJyD5Pvn9u/giphy.gif" style="width: 100%" alt="indiana jones shooting a guy">
+
+    <p>Be like Indiana Jones. Use flexbox.</p>
+
+    <p>
+      If you want to have a crack at this yourself, you can try replicating these layouts.
+      Answers in the dev tools on the pages ;-)
+    </p>
+
+    <ul>
+      <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-1.html">Float text around an image (hint: you'll need CSS shapes for this one)</a></li>
+      <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-2.html">A footer that sticks to the bottom as the page resizes</a></li>
+      <li><a href="https://ejzimmer.github.io/flexbox-vs-float/example-3.html">Sticky header, footer and sidebar, with scrollable content</a></li>
+    </ul>
+  </article>
 </body>
 </html>

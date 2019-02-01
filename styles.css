@@ -1,0 +1,212 @@
+body {
+  margin: 4vh 0;
+  font-family: sans-serif;
+  display: flex;
+  color: hsl(213, 60%, 25%);
+  --container-border: 2px solid currentColor;
+  --element-border: 1px solid currentColor;
+  --white: hsl(213, 50%, 85%);
+  --box-shadow-colour: hsla(213, 60%, 25%, .4);
+  --medium-gap: 30px;
+  --large-gap: 60px;
+}
+
+body, article:before {
+  background-image: url('balloons.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
+
+article:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: blur(30px);
+}
+
+article {
+  --blur-colour: hsla(0, 0%, 100%, .4);
+  position: relative;
+  background-color: var(--blur-colour);
+  padding: 10px 20px;
+  box-shadow: 0 0 5px 10px var(--blur-colour);
+  width: 75vw;
+  min-width: 400px;
+  max-width: 800px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  font-variant: small-caps;
+  font-size: 40px;
+}
+h1.main-title::after {
+  content: 'the final showdown';
+  display: block;
+  font-size: .8em;
+}
+
+h2 {
+  font-size: 20px;
+  font-style: italic;
+}
+
+p + h2 {
+  margin-top: var(--large-gap);
+}
+
+.holy-grail {
+  display: grid;
+  grid-gap: 0;
+  border: var(--container-border);
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: var(--medium-gap);
+}
+.holy-grail > * {
+  border: 1px solid currentColor;
+}
+.holy-grail .header, .holy-grail .footer {
+  display: flex;
+  height: 1.8em;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1 / -1;
+}
+.holy-grail .menu, .holy-grail .content {
+  padding: 5px;
+}
+.holy-grail .content {
+  min-height: 5em;
+  grid-column: 2 / -1;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 0;
+}
+dt, dd {
+  padding-bottom: 20px;
+}
+dt {
+  border-right: var(--element-border);
+  padding-right: 10px;
+  font-weight: bold;
+}
+dd {
+  margin: 0;
+  font-size: .9em;
+  padding-left: 10px;
+}
+
+legend {
+  font-variant: small-caps;
+  text-align: center;
+}
+fieldset {
+  border: var(--container-border);
+}
+fieldset p {
+  font-size: .8em;
+  text-align: justify;
+}
+
+button {
+  border: var(--element-border);
+  background: var(--white);
+  padding: 5px 10px;
+  box-shadow: 1px 1px 2px var(--box-shadow-colour);
+  cursor: pointer;
+}
+button:active {
+  box-shadow: none;
+}
+
+.example {
+  margin: 20px;
+}
+.example div {
+  border: var(--element-border);
+  width: 8ch;
+  height: 8ch;
+  font-size: 12px;
+  padding: 5px;
+  margin: 5px;
+  color: var(--white);
+  box-shadow: 1px 1px var(--box-shadow-colour);
+}
+.example div:nth-child(3n + 1) {
+  background-color: #9c162a;
+}
+.example div:nth-child(3n + 2) {
+  background-color: #c4ac47;
+}
+.example div:nth-child(3n + 3) {
+  background-color: #1a8cb9;
+}
+
+.example.change-flow div, .example.float div {
+  cursor: pointer;
+}
+
+.example.float {
+  text-shadow: 1px 1px var(--box-shadow-colour);
+}
+
+.css-table {
+  border: var(--container-border);
+  border-collapse: collapse;
+}
+.css-table th {
+  font-style: italic;
+  font-size: 12px;
+}
+.css-table td, .css-table th {
+  border: var(--element-border);
+  padding: 10px;
+}
+.css-table td {
+  font-size: .8em;
+}
+.css-table td code {
+  font-size: 1.2em;
+}
+
+.example.flex-grow {
+  display: flex;
+}
+.example.flex-grow div {
+  margin: 0;
+}
+.example.flex-grow div:nth-child(2) {
+  flex-grow: 1;
+}
+
+.example.complicated-grid {
+  display: grid; 
+  grid-template-columns: repeat(4, 3ch); 
+  grid-auto-rows: 3ch;
+}
+.example.complicated-grid div {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+}
+
+li {
+  margin: 1em;
+}
+a {
+  color: currentColor;
+}
+
+.episode-4-text {
+  max-width: 500px;
+  margin: auto;
+}
